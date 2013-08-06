@@ -13,7 +13,7 @@ use Ens\JobeetBundle\Form\JobType;
 /**
  * Job controller.
  *
- * @Route("/ens_job")
+ * @Route("/job")
  */
 class JobController extends Controller
 {

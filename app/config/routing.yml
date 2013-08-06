@@ -1,4 +1,4 @@
 ens_jobeet:
-    resource: "@EnsJobeetBundle/Resources/config/routing.yml"
-    prefix:   /
+    resource: "@EnsJobeetBundle/Controller"
+    type: annotation
 
