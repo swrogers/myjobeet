@@ -138,7 +138,10 @@ class Job
      */
     private function setCreatedAtValue()
     {
-
+        if(!$this->getCreatedAt())
+        {
+            $this->created_ad = new \DateTime();
+        }
     }
 
     /**
@@ -146,7 +149,7 @@ class Job
      */
     private function setUpdatedAtValue()
     {
-
+        $this->updated_at = new \DateTime();
     }
 
 
@@ -503,5 +506,38 @@ class Job
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Get expires_at
+     *
+     * @return \DateTime 
+     */
+    public function getExpiresAt()
+    {
+        return $this->expires_at;
+    }
+
+    /**
+     * Set category
+     *
+     * @param \Ens\JobeetBundle\Entity\Category $category
+     * @return Job
+     */
+    public function setCategory(\Ens\JobeetBundle\Entity\Category $category = null)
+    {
+        $this->category = $category;
+    
+        return $this;
+    }
+
+    /**
+     * Get category
+     *
+     * @return \Ens\JobeetBundle\Entity\Category 
+     */
+    public function getCategory()
+    {
+        return $this->category;
     }
 }
