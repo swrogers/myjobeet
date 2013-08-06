@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Ens\JobeetBundle\Entity\JobRepository")
- * @ORM\HasLifeCycleCallbacks()
+ * @ORM\HasLifecycleCallbacks()
  */
 class Job
 {
