@@ -28,6 +28,16 @@ class Category
      */
     private $name;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Job", mappedBy="category")
+     */
+    private $jobs;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CategoryAffiliate", mappedBy="category")
+     */
+    private $category_affiliates;
+
 
     /**
      * Get id

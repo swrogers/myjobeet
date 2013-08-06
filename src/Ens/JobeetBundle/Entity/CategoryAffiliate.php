@@ -21,6 +21,18 @@ class CategoryAffiliate
      */
     private $id;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="category_affiliates")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    private $category;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Affiliate", inversedBy="category_affiliates")
+     * @ORM\JoinColumn(name="affiliate_id", referencedColumnName="id")
+     */
+    private $affiliate;
+
 
     /**
      * Get id

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Ens\JobeetBundle\Entity\JobRepository")
+ * @ORM\HasLifeCycleCallbacks
  */
 class Job
 {
@@ -125,6 +126,28 @@ class Job
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private $updatedAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="jobs")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    private $category;
+
+    /**
+     * @ORM\PrePersist
+     */
+    private function setCreatedAtValue()
+    {
+
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    private function setUpdatedAtValue()
+    {
+
+    }
 
 
     /**
