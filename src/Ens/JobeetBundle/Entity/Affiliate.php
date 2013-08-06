@@ -59,7 +59,7 @@ class Affiliate
     /**
      * @ORM\PrePersist
      */
-    private function setCreatedAtValue()
+    public function setCreatedAtValue()
     {
         $this->created_at = new \DateTime();
     }

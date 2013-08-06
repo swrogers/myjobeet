@@ -136,20 +136,20 @@ class Job
     /**
      * @ORM\PrePersist
      */
-    private function setCreatedAtValue()
+    public function setCreatedAtValue()
     {
         if(!$this->getCreatedAt())
         {
-            $this->created_ad = new \DateTime();
+            $this->createdAt = new \DateTime();
         }
     }
 
     /**
      * @ORM\PreUpdate
      */
-    private function setUpdatedAtValue()
+    public function setUpdatedAtValue()
     {
-        $this->updated_at = new \DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
 
