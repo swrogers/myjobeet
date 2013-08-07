@@ -6,3 +6,8 @@ and attempting to update it to the current version of Symfony as needed.
 As an added degree of difficulty, I'm also forcing myself to learn git.
 
 So this should be fun and exciting.
+
+The current major changes between this version and the one from the ENS site are:
+* I use annotations where possible, so the Doctrine definitions are in the Entities
+* my version does not use the routing file, opting to go with SensioFrameworkExtraBundle
+* hasFlash is no longer in Symfony 2.3, so the templates are updated to use app.session.flashbag
