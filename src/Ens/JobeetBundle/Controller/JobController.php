@@ -27,9 +27,16 @@ class JobController extends Controller
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()
+                        ->getManager()
+                        ->getRepository('EnsJobeetBundle:Job');
 
-        $entities = $em->getRepository('EnsJobeetBundle:Job')->findAll();
+        $query = $repository->createQueryBuilder('j')
+            ->where('j.expires_at > :date')
+            ->setParameter('date', date('Y-m-d H:i:s', time() - 86400 * 30))
+            ->getQuery();
+
+        $entities = $query->getResult();
 
         return array(
             'entities' => $entities,
