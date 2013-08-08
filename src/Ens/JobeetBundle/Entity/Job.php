@@ -3,6 +3,7 @@
 namespace Ens\JobeetBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ens\JobeetBundle\Utils\Jobeet as Jobeet;
 
 /**
  * Job
@@ -539,5 +540,35 @@ class Job
     public function getCategory()
     {
         return $this->category;
+    }
+
+    /**
+     * Slugify Company
+     *
+     * @return string
+     */
+    public function getCompanySlug()
+    {
+        return Jobeet::slugify($this->getCompany());
+    }
+
+    /**
+     * Slugify Position
+     *
+     * @return string
+     */
+    public function getPositionSlug()
+    {
+        return Jobeet::slugify($this->getPosition());
+    }
+
+    /**
+     * Slugify Location
+     *
+     * @return string
+     */
+    public function getLocationSlug()
+    {
+        return Jobeet::slugify($this->getLocation());
     }
 }
