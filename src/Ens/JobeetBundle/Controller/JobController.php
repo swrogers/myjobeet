@@ -83,7 +83,7 @@ class JobController extends Controller
     /**
      * Finds and displays a Job entity.
      *
-     * @Route("/job/{company}/{location}/{id}/{position}", name="ens_job_show")
+     * @Route("/job/{company}/{location}/{id}/{position}", name="ens_job_show", requirements={"id" = "\d+"})
      * @Method("GET")
      * @Template()
      */
