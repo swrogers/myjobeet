@@ -13,7 +13,7 @@ use Ens\JobeetBundle\Form\JobType;
 /**
  * Job controller.
  *
- * @Route("/job")
+ * @Route("/")
  */
 class JobController extends Controller
 {
@@ -83,7 +83,7 @@ class JobController extends Controller
     /**
      * Finds and displays a Job entity.
      *
-     * @Route("/{id}", name="ens_job_show")
+     * @Route("/job/{id}", name="ens_job_show")
      * @Method("GET")
      * @Template()
      */
@@ -108,7 +108,7 @@ class JobController extends Controller
     /**
      * Displays a form to edit an existing Job entity.
      *
-     * @Route("/{id}/edit", name="ens_job_edit")
+     * @Route("/job/{id}/edit", name="ens_job_edit")
      * @Method("GET")
      * @Template()
      */
@@ -135,7 +135,7 @@ class JobController extends Controller
     /**
      * Edits an existing Job entity.
      *
-     * @Route("/{id}", name="ens_job_update")
+     * @Route("/job/{id}", name="ens_job_update")
      * @Method("PUT")
      * @Template("EnsJobeetBundle:Job:edit.html.twig")
      */
