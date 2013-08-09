@@ -62,4 +62,22 @@ class JobRepository extends EntityRepository
 
         return $job;
     }
+
+    public function countActiveJobs($category_id = null)
+    {
+        $querybuilder = $this->createQueryBuilder('j')
+            ->select('count(j.id)')
+            ->where('j.expires_at > :date')
+            ->setParameter('date', date('Y-m-d H:i:s', time()));
+
+        if($category_id)
+        {
+            $querybuilder->andWhere('j.category = :category_id')
+                ->setParameter('category_id', $category_id);
+        }
+
+        $query = $querybuilder->getQuery();
+
+        return $query->getSingleScalarResult();
+    }
 }

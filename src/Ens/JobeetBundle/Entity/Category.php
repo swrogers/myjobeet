@@ -3,12 +3,14 @@
 namespace Ens\JobeetBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ens\JobeetBundle\Utils\Jobeet;
 
 /**
  * Category
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Ens\JobeetBundle\Entity\CategoryRepository")
+ * @ORM\HasLifecycleCallBacks()
  */
 class Category
 {
@@ -29,6 +31,13 @@ class Category
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="slug", type="string", length=255, unique=true)
+     */
+    private $slug;
+
+    /**
      * @ORM\OneToMany(targetEntity="Job", mappedBy="category")
      */
     private $jobs;
@@ -37,6 +46,8 @@ class Category
      * @ORM\OneToMany(targetEntity="CategoryAffiliate", mappedBy="category")
      */
     private $category_affiliates;
+
+    private $more_jobs;
 
     private $active_jobs;
 
@@ -50,6 +61,24 @@ class Category
         return $this->active_jobs;
     }
 
+    public function setMoreJobs($jobs)
+    {
+        $this->more_jobs = $jobs >= 0 ? $jobs : 0;
+    }
+
+    public function getMoreJobs()
+    {
+        return $this->more_jobs;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setSlugValue()
+    {
+        $this->slug = Jobeet::slugify($this->getName());
+    }
 
     /**
      * Returns a string representation of item
@@ -167,5 +196,28 @@ class Category
     public function getCategoryAffiliates()
     {
         return $this->category_affiliates;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     * @return Category
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string 
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }
