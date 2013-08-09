@@ -29,11 +29,18 @@ class JobController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('EnsJobeetBundle:Job')
-            ->getActiveJobs();
+        $categories = $em->getRepository('EnsJobeetBundle:Category')->getWithJobs();
+
+        foreach( $categories as $category )
+        {
+            $category->setActiveJobs(
+                $em->getRepository('EnsJobeetBundle:Job')
+                    ->getActiveJobs($category->getId(), $this->container->getParameter('max_jobs_on_homepage'))
+                );
+        }
 
         return array(
-            'entities' => $entities,
+            'categories' => $categories,
         );
     }
     /**

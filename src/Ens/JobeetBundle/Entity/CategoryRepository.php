@@ -12,4 +12,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class CategoryRepository extends EntityRepository
 {
+    public function getWithJobs()
+    {
+        $querybuilder = $this->createQueryBuilder('c')
+            ->leftJoin('c.jobs', 'j')
+                ->addSelect('j')
+                ->andWhere('j.expires_at > :date')
+                ->setParameter('date', date('Y-m-d H:i:s', time()));
+
+        return $querybuilder->getQuery()->getResult();
+    }
 }
