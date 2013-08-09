@@ -12,6 +12,11 @@ use Doctrine\ORM\EntityRepository;
  */
 class JobRepository extends EntityRepository
 {
+    /**
+     * Return query result containing active jobs
+     * If a category_id is present, only return active
+     * jobs in that category.
+     */
     public function getActiveJobs($category_id = null, $max = null)
     {
         $querybuilder = $this->createQueryBuilder('j')
@@ -33,5 +38,28 @@ class JobRepository extends EntityRepository
         $query = $querybuilder->getQuery();
     
         return $query->getResult();
+    }
+
+    /**
+     * Return single active job for job_id.
+     * If the job is not active, then error.
+     */
+    public function getActiveJob($id)
+    {
+        $query = $this->createQueryBuilder('j')
+            ->where('j.id = :id')
+            ->setParameter('id', $id)
+            ->andWhere('j.expires_at > :date')
+            ->setParameter('date', date('Y-m-d H:i:s', time()))
+            ->setMaxResults(1)
+            ->getQuery();
+
+        try {
+            $job = $query->getSingleResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $job = null;
+        } 
+
+        return $job;
     }
 }
