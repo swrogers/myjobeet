@@ -19,11 +19,11 @@ class CategoryController extends Controller
     /**
      * Finds and shows category
      *
-     * @Route("/{slug}", name="ens_category_show")
+     * @Route("/{slug}/{page}", name="ens_category_show")
      * @Method("GET")
      * @Template()
      */
-    public function showAction($slug)
+    public function showAction($slug, $page = 1)
     {
         $em = $this->getDoctrine()->getManager();
 
