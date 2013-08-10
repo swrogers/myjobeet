@@ -3,6 +3,7 @@
 namespace Ens\JobeetBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * JobRepository
@@ -17,7 +18,7 @@ class JobRepository extends EntityRepository
      * If a category_id is present, only return active
      * jobs in that category.
      */
-    public function getActiveJobs($category_id = null, $max = null)
+    public function getActiveJobs($category_id = null, $max = null, $page = null)
     {
         $querybuilder = $this->createQueryBuilder('j')
             ->where('j.expires_at > :date')
@@ -36,8 +37,14 @@ class JobRepository extends EntityRepository
         }
 
         $query = $querybuilder->getQuery();
-    
-        return $query->getResult();
+
+        if($page)
+        {
+            $query->setFirstResult( ($page-1) * $max );
+        }
+
+        return new Paginator($query);
+        //return $query->getResult();
     }
 
     /**
