@@ -10,7 +10,7 @@ use Ens\JobeetBundle\Utils\Jobeet;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Ens\JobeetBundle\Entity\CategoryRepository")
- * @ORM\HasLifecycleCallBacks()
+ * @ORM\HasLifecycleCallbacks()
  */
 class Category
 {
