@@ -6,50 +6,40 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class JobControllerTest extends WebTestCase
 {
-    /*
-    public function testCompleteScenario()
+    public function testIndex()
     {
-        // Create a new client to browse the application
         $client = static::createClient();
 
-        // Create a new entry in the database
-        $crawler = $client->request('GET', '/ens_job/');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /ens_job/");
-        $crawler = $client->click($crawler->selectLink('Create a new entry')->link());
+        $crawler = $client->request('GET', '/');
 
-        // Fill in the form and submit it
-        $form = $crawler->selectButton('Create')->form(array(
-            'ens_jobeetbundle_jobtype[field_name]'  => 'Test',
-            // ... other fields to fill
-        ));
+        // Make sure we're in the right controller
+        $this->assertEquals('Ens\JobeetBundle\Controller\JobController::indexAction',
+            $client->getRequest()->attributes->get('_controller'));
+        
+        // Make sure no expired jobs are listed
+        $this->assertTrue($crawler->filter('.jobs td.position:contains("Expired")')->count() == 0);
 
-        $client->submit($form);
-        $crawler = $client->followRedirect();
+        $kernel = static::createKernel();
+        $kernel->boot();
 
-        // Check data in the show view
-        $this->assertGreaterThan(0, $crawler->filter('td:contains("Test")')->count(), 'Missing element td:contains("Test")');
+        $max_jobs_on_homepage = $kernel->getContainer()->getParameter('max_jobs_on_homepage');
 
-        // Edit the entity
-        $crawler = $client->click($crawler->selectLink('Edit')->link());
+        // Make sure we don't go over the requested number of listed jobs
+        $this->assertTrue( $crawler->filter('.category_programming tr')->count() <= $max_jobs_on_homepage );
 
-        $form = $crawler->selectButton('Edit')->form(array(
-            'ens_jobeetbundle_jobtype[field_name]'  => 'Foo',
-            // ... other fields to fill
-        ));
+        // Make sure a category link only shows if needed
+        $this->assertTrue($crawler->filter('.category_design .more_jobs')->count() == 0);
+        $this->assertTrue($crawler->filter('.category_programming .more_jobs')->count() == 1);
 
-        $client->submit($form);
-        $crawler = $client->followRedirect();
+        // Make sure jobs are sorted by date
+        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $query = $em->createQuery('SELECT j from EnsJobeetBundle:Job j LEFT JOIN j.category c WHERE c.slug = :slug AND j.expires_at > :date ORDER BY j.createdAt DESC');
+        $query->setParameter('slug', 'programming');
+        $query->setParameter('date', date('Y-m-d H:i:s', time()));
+        $query->setMaxResults(1);
+        $job = $query->getSingleResult();
 
-        // Check the element contains an attribute with value equals "Foo"
-        $this->assertGreaterThan(0, $crawler->filter('[value="Foo"]')->count(), 'Missing element [value="Foo"]');
-
-        // Delete the entity
-        $client->submit($crawler->selectButton('Delete')->form());
-        $crawler = $client->followRedirect();
-
-        // Check the entity has been delete on the list
-        $this->assertNotRegExp('/Foo/', $client->getResponse()->getContent());
+        $this->assertTrue($crawler->filter('.category_programming tr')->first()->filter(sprintf('a[href*="/%d/"]', $job->getId()))->count() == 1);
     }
-
-    */
 }
