@@ -13,3 +13,4 @@ The current major changes between this version and the one from the ENS site are
 * hasFlash is no longer in Symfony 2.3, so the templates are updated to use app.session.flashbag
 * I prefer to write queries using the QueryBuilder, not DQL
 * Doctrine 2 comes with the ability to use pagination, so I've opted to go that route instead of using an offset. There is not really much difference either way, however.
+* Annotations used for entity/form validation as opposed to config files

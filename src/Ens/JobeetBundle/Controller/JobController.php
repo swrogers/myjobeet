@@ -62,6 +62,7 @@ class JobController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+
             $em->persist($entity);
             $em->flush();
 
@@ -89,6 +90,7 @@ class JobController extends Controller
     public function newAction()
     {
         $entity = new Job();
+        $entity->setType('full-time');
         $form   = $this->createForm(new JobType(), $entity);
 
         return array(
@@ -153,7 +155,7 @@ class JobController extends Controller
      * Edits an existing Job entity.
      *
      * @Route("/job/{id}", name="ens_job_update")
-     * @Method("PUT")
+     * @Method({"GET","POST"})
      * @Template("EnsJobeetBundle:Job:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
@@ -174,7 +176,12 @@ class JobController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('ens_job_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('ens_job_show', array(
+                'id' => $id,
+                'company' => $entity->getCompanySlug(),
+                'location' => $entity->getLocationSlug(),
+                'position' => $entity->getPositionSlug()
+            )));
         }
 
         return array(

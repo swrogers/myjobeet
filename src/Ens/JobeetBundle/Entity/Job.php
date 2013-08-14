@@ -3,6 +3,7 @@
 namespace Ens\JobeetBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Ens\JobeetBundle\Utils\Jobeet as Jobeet;
 
 /**
@@ -27,6 +28,8 @@ class Job
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
+     * @Assert\NotBlank()
+     * @Assert\Choice(callback = "getTypeValues")
      */
     private $type;
 
@@ -34,6 +37,7 @@ class Job
      * @var string
      *
      * @ORM\Column(name="company", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $company;
 
@@ -55,6 +59,7 @@ class Job
      * @var string
      *
      * @ORM\Column(name="position", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $position;
 
@@ -62,6 +67,7 @@ class Job
      * @var string
      *
      * @ORM\Column(name="location", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $location;
 
@@ -69,6 +75,7 @@ class Job
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Assert\NotBlank()
      */
     private $description;
 
@@ -76,6 +83,7 @@ class Job
      * @var string
      *
      * @ORM\Column(name="how_to_apply", type="text")
+     * @Assert\NotBlank()
      */
     private $howToApply;
 
@@ -104,6 +112,8 @@ class Job
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
@@ -131,8 +141,118 @@ class Job
     /**
      * @ORM\ManyToOne(targetEntity="Category", inversedBy="jobs")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     * @Assert\NotBlank()
      */
     private $category;
+
+    /**
+     * File field used in uploads
+     * @Assert\Image()
+     */
+    public $file;
+
+    /**
+     * Sets a unique token value
+     * @ORM\PrePersist
+     */
+    public function setTokenValue()
+    {
+        if(!$this->getToken())
+        {
+            $this->token = sha1($this->getEmail().rand(11111,99999));
+        }
+    }
+
+    /**
+     * Returns upload directory, relative to web root
+     */
+    public function getUploadDir()
+    {
+        return 'uploads/jobs';
+    }
+
+    /**
+     * Returns the upload directory, relative to file system
+     */
+    public function getUploadRootDir()
+    {
+        return __DIR__.'/../../../../web/'.$this->getUploadDir();
+    }
+
+    /**
+     * Returns the web path for the logo image
+     */
+    public function getWebPath()
+    {
+        return null === $this->logo ? null : $this->getUploadDir().'/'.$this->logo;
+    }
+
+    /**
+     * Returns the file path location for the logo image
+     */
+    public function getAbsolutePath()
+    {
+        return null === $this->logo ? null : $this->getUploadRootDir().'/'.$this->logo;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function preUpload()
+    {
+        if(null !== $this->file)
+        {
+            $this->logo = uniqid().'.'.$this->file->guessExtension();
+        }
+    }
+
+    /**
+     * @ORM\PostPersist
+     * @ORM\PostUpdate
+     */
+    public function upload()
+    {
+        if(null === $this->file)
+        {
+            return;
+        }
+
+        $this->file->move($this->getUploadRootDir(), $this->logo);
+
+        unset($this->file);
+    }
+
+    /**
+     * @ORM\PostRemove
+     */
+    public function removeUpload()
+    {
+        if($file = $this->getAbsolutePath())
+        {
+            unlink($file);
+        }
+    }
+
+    /**
+     * Used to control what kind of job types can be created
+     */
+    public static function getTypes()
+    {
+        return array(
+            'full-time' => 'Full time',
+            'part-time' => 'Part time',
+            'freelance' => 'Freelance'
+        );
+    }
+
+    /**
+     * Used in object validation
+     */
+    public static function getTypeValues()
+    {
+        return array_keys(self::getTypes());
+    }
 
     /**
      * @ORM\PrePersist
