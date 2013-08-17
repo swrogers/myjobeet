@@ -66,8 +66,8 @@ class JobController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('ens_job_show', array(
-                'id' => $entity->getId(),
+            return $this->redirect($this->generateUrl('ens_job_preview', array(
+                'token' => $entity->getToken(),
                 'company' => $entity->getCompany(),
                 'position' => $entity->getPosition(),
                 'location' => $entity->getLocation(),
@@ -116,7 +116,7 @@ class JobController extends Controller
             throw $this->createNotFoundException('Unable to find Job entity.');
         }
 
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getToken());
 
         return array(
             'entity'      => $entity,
@@ -176,8 +176,8 @@ class JobController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('ens_job_show', array(
-                'id' => $entity->getId(),
+            return $this->redirect($this->generateUrl('ens_job_preview', array(
+                'token' => $entity->getToken(),
                 'company' => $entity->getCompanySlug(),
                 'location' => $entity->getLocationSlug(),
                 'position' => $entity->getPositionSlug()
@@ -196,12 +196,72 @@ class JobController extends Controller
      * Similar as showAction but uses token id
      *
      * @Route("/job/{company}/{location}/{token}/{position}", name="ens_job_preview", requirements={"token" = "\w+"})
+     * @Template("EnsJobeetBundle:Job:show.html.twig")
      */
     public function previewAction(Request $request, $token)
     {
+       $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('EnsJobeetBundle:Job')->findOneByToken($token);
+
+        if(!$entity) 
+        {
+            throw $this->createNotFoundException('Unable to find Job entity.');
+        } 
+
+        $deleteForm = $this->createDeleteForm($entity->getToken());
+        $publishForm = $this->createPublishForm($entity->getToken());
+
+        return array(
+            'entity' => $entity,
+            'id' => $entity->getId(),
+            'company' => $entity->getCompanySlug(),
+            'location' => $entity->getLocationSlug(),
+            'position' => $entity->getPositionSlug(),
+            'delete_form' => $deleteForm->createView(),
+            'publish_form' => $publishForm->createView(),
+        );
         
     }
 
+    /**
+     * Publishes a Job
+     * @Route("/job/{token}/publish", name="ens_job_publish")
+     * @Method("POST")
+     * @Template()
+     */
+    public function publishAction(Request $request, $token)
+    {
+        $form = $this->createPublishForm($token);
+
+        $form->bind($request);
+
+        if($form->isValid())
+        {
+            $em = $this->getDoctrine()->getManager();
+            $entity = $em->getRepository('EnsJobeetBundle:Job')->findOneByToken($token);
+
+            if(!$entity)
+            {
+                throw $this->createNotFoundException('Unable to find Job entity.');
+            }
+        
+            $entity->publish();
+            $em->persist($entity);
+            $em->flush();
+
+            $this->get('session')->getFlashBag()->add('notice', 'Your job is now online for 30 days.');
+        }
+
+        return $this->redirect(
+            $this->generateUrl('ens_job_preview', array(
+                'company' => $entity->getCompanySlug(),
+                'location' => $entity->getLocationSlug(),
+                'token' => $entity->getToken(),
+                'position' => $entity->getPositionSlug(),
+        )));
+    }
+    
     /**
      * Deletes a Job entity.
      *
@@ -241,5 +301,15 @@ class JobController extends Controller
             ->add('token', 'hidden')
             ->getForm()
         ;
+    }
+
+    /**
+     * Creates a form to publish a Job entity
+     */
+    private function createPublishForm($token)
+    {
+        return $this->createFormBuilder(array('token' => $token))
+            ->add('token', 'hidden')
+            ->getForm();
     }
 }

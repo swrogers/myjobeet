@@ -151,6 +151,39 @@ class Job
      */
     public $file;
 
+    
+    /**
+     * Set the Job to activated
+     */
+    public function publish()
+    {
+        $this->setIsActivated(true);
+    }
+
+    /**
+     * Checks if the job is expired
+     */
+    public function isExpired()
+    {
+        return $this->getDaysBeforeExpires() < 0;
+    }
+
+    /**
+     * Checks to see if the job expires in 5 days
+     */
+    public function expiresSoon()
+    {
+        return $this->getDaysBeforeExpires() < 5;
+    }
+
+    /**
+     * Returns how many days until job expires
+     */
+    public function getDaysBeforeExpires()
+    {
+        return ceil( ($this->getExpiresAt()->format('U') - time()) / 86400);
+    }
+
     /**
      * Sets a unique token value
      * @ORM\PrePersist
