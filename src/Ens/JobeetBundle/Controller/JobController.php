@@ -141,6 +141,11 @@ class JobController extends Controller
             throw $this->createNotFoundException('Unable to find Job entity.');
         }
 
+        if($entity->getIsActivated())
+        {
+            throw $this->createNotFoundException('Job is activated and cannot be edited.');
+        }
+
         $editForm = $this->createForm(new JobType(), $entity);
         $deleteForm = $this->createDeleteForm($token);
 
@@ -211,6 +216,7 @@ class JobController extends Controller
 
         $deleteForm = $this->createDeleteForm($entity->getToken());
         $publishForm = $this->createPublishForm($entity->getToken());
+        $extendForm = $this->createExtendForm($entity->getToken());
 
         return array(
             'entity' => $entity,
@@ -220,6 +226,7 @@ class JobController extends Controller
             'position' => $entity->getPositionSlug(),
             'delete_form' => $deleteForm->createView(),
             'publish_form' => $publishForm->createView(),
+            'extend_form' => $extendForm->createView(),
         );
         
     }
@@ -289,6 +296,49 @@ class JobController extends Controller
     }
 
     /**
+     * Extends the expiration date
+     *
+     * @Route("/job/{token}/extend", name="ens_job_extend")
+     * @Method("POST")
+     */
+    public function extendAction(Request $request, $token)
+    {
+        $form = $this->createExtendForm($token);
+        $form->bind($request);
+
+        if($form->isValid())
+        {
+            $em = $this->getDoctrine()->getManager();
+            $entity = $em->getRepository('EnsJobeetBundle:Job')->findOneByToken($token);
+    
+            if(!$entity)
+            {
+                throw $this->createNotFoundException('Unable to find Job entity.');
+            }
+
+            if(!$entity->extend())
+            {
+                throw $this->createNotFoundException('Unable to extend the job.');
+            }
+
+            $em->persist($entity);
+            $em->flush();
+
+            $this->get('session')->getFlashBag()->add('notice',
+                    sprintf('Your job validity has been extended until %s.',
+                        $entity->getExpiresAt()->format('m/d/Y')));
+        }
+
+        return $this->redirect($this->generateUrl('ens_job_preview', array(
+            'company' => $entity->getCompanySlug(),
+            'location' => $entity->getLocationSlug(),
+            'token' => $entity->getToken(),
+            'position' => $entity->getPositionSlug(),
+        )));
+    }
+
+
+    /**
      * Creates a form to delete a Job entity by id.
      *
      * @param mixed $id The entity id
@@ -309,6 +359,16 @@ class JobController extends Controller
     private function createPublishForm($token)
     {
         return $this->createFormBuilder(array('token' => $token))
+            ->add('token', 'hidden')
+            ->getForm();
+    }
+
+    /**
+     * Creates a form for extending a Job entity
+     */
+    private function createExtendForm($token)
+    {
+        return $this->createFormbuilder(array('token' => $token))
             ->add('token', 'hidden')
             ->getForm();
     }

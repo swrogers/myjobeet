@@ -151,6 +151,20 @@ class Job
      */
     public $file;
 
+    /**
+     * Returns true if the job has been extended
+     */
+    public function extend()
+    {
+        if(!$this->expiresSoon())
+        {
+            return false;
+        }
+
+        $this->expiresAt = new \DateTime(date('Y-m-d H:i:s', time() + 86400 * 30));
+    
+        return true;
+    }
     
     /**
      * Set the Job to activated

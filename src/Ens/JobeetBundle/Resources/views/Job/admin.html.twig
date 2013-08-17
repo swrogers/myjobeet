@@ -1,8 +1,8 @@
 <div id="job_actions">
   <h3>Admin</h3>
   <ul>
-    <li><a href="{{ path('ens_job_edit', {'token': job.token}) }}">Edit</a></li>
     {% if not job.isActivated %}
+    <li><a href="{{ path('ens_job_edit', {'token': job.token}) }}">Edit</a></li>
     <li>
       <form action="{{ path('ens_job_publish', {'token': job.token}) }}" method="post">
         {{ form_widget(publish_form) }}
@@ -24,8 +24,11 @@
       Expires in <strong>{{ job.getDaysBeforeExpires }}</strong> days
       {% endif %}
 
-      {% if job.expiresSoon%}
-      - <a href="">Extend</a> for another 30 days
+      {% if job.expiresSoon %}
+      <form action="{{ path('ens_job_extend', {'token': job.token }) }}" method="post">
+        {{ form_widget(extend_form) }}
+        <button type="submit">Extend</button> for another 30 days
+      </form>
       {% endif %}
     </li>
     {% else %}
