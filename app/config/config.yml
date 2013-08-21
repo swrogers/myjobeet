@@ -1,6 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: @EnsJobeetBundle/Resources/config/admin.yml }
 
 framework:
     #esi:             ~
@@ -83,6 +84,11 @@ sonata_block:
         #sonata.media.block.media:
         #sonata.media.block.gallery:
         #sonata.media.block.feature_media:
+
+# Sonata Admin Config
+sonata_admin:
+    title: My Jobeet Admin
+    
 
 # Sonata Doctrine ORM Admin Bundle Config
 sonata_doctrine_orm_admin:
