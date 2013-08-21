@@ -85,4 +85,27 @@ class JobAdmin extends Admin
             ->add('email')
             ->add('expires_at');
     }
+
+    public function getBatchActions()
+    {
+        $actions = parent::getBatchActions();
+
+        if($this->hasRoute('edit') && $this->isGranted('EDIT')
+            && $this->hasRoute('delete') && $this->isGranted('DELETE'))
+        {
+            // Select to extend the expiration date of the posting
+            $actions['extend'] = array(
+                'label' => 'Extend',
+                'ask_confirmation' => true
+            );
+
+            // Select to delete jobs that have never been activated
+            $actions['deleteNeverActivated'] = array(
+                'label' => 'Delete never activated jobs',
+                'ask_confirmation' => true
+            );
+        }
+
+        return $actions;
+    }
 }
