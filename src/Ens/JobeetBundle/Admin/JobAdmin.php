@@ -17,6 +17,9 @@ class JobAdmin extends Admin
         '_sort_by' => 'createdAt'
     );
 
+    /**
+     * Configure fields to be shown on create/edit forms
+     */
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
@@ -34,6 +37,9 @@ class JobAdmin extends Admin
             ->add('isActivated');
     }
 
+    /**
+     * Congfigure what fields can be filtered/searched on
+     */
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
@@ -47,6 +53,9 @@ class JobAdmin extends Admin
             ->add('expires_at');
     }   
 
+    /**
+     * Configure what fields will be shown in the lists
+     */
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
@@ -67,6 +76,9 @@ class JobAdmin extends Admin
             ));
     }
 
+    /**
+     * Configure what fields are used for showing a single item
+     */
     protected function configureShowFields(ShowMapper $showMapper)
     {
         $showMapper
@@ -86,6 +98,10 @@ class JobAdmin extends Admin
             ->add('expires_at');
     }
 
+    /**
+     * Set the actions that can be performed on multiply
+     * selected items from the list
+     */
     public function getBatchActions()
     {
         $actions = parent::getBatchActions();
