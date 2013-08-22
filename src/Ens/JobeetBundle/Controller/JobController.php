@@ -116,6 +116,28 @@ class JobController extends Controller
             throw $this->createNotFoundException('Unable to find Job entity.');
         }
 
+        // Save the last three jobs viewed so the user can easily get back to them
+        $session = $this->getRequest()->getSession();
+    
+        $jobs = $session->get('job_history', array());
+
+        $job = array('id' => $entity->getId(),
+                'position' => $entity->getPosition(),
+                'company' => $entity->getCompany(),
+                'companyslug' => $entity->getCompanySlug(),
+                'locationslug' => $entity->getLocationSlug(),
+                'positionslug' => $entity->getPositionSlug(),
+        );
+
+        if(!in_array($job, $jobs))
+        {
+            // add the current job at the beginning of the jobs array
+            array_unshift($jobs, $job);
+
+            // set job history session of only 3 items
+            $session->set('job_history', array_slice($jobs, 0, 3));
+        }
+
         $deleteForm = $this->createDeleteForm($entity->getToken());
 
         return array(
