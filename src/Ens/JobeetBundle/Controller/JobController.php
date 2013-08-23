@@ -22,6 +22,7 @@ class JobController extends Controller
      * Lists all Job entities.
      *
      * @Route("/", name="ens_job")
+     * @Route("/index.{_format}", name="ens_job_format")
      * @Method("GET")
      * @Template()
      */
@@ -41,6 +42,17 @@ class JobController extends Controller
             $category->setMoreJobs(
                 $em->getRepository('EnsJobeetBundle:Job')
                     ->countActiveJobs($category->getId()) - $this->container->getParameter('max_jobs_on_homepage'));
+        }
+
+        $format = $this->getRequest()->getRequestFormat();
+
+        if('html' !== $format)
+        {
+            return $this->render('EnsJobeetBundle:Job:index.'.$format.'.twig', 
+                array( 'categories' => $categories,
+                    'lastUpdated' => $em->getRepository('EnsJobeetBundle:Job')->getLatestPost()->getCreatedAt()->format(DATE_ATOM),
+                    'feedId' => sha1($this->get('router')->generate('ens_job', array('_format' => 'atom'), true)),
+                 ));
         }
 
         return array(
