@@ -45,7 +45,12 @@ class JobController extends Controller
         }
 
         $format = $this->getRequest()->getRequestFormat();
-
+        
+        /**
+         * Render non-html template types
+         * I was not sure of a better way to go about doing this in
+         * conjuction with using routing annotations...
+         */
         if('html' !== $format)
         {
             return $this->render('EnsJobeetBundle:Job:index.'.$format.'.twig', 
