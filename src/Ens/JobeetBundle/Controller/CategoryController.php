@@ -19,6 +19,7 @@ class CategoryController extends Controller
     /**
      * Finds and shows category
      *
+     * @Route("/{slug}/index.{_format}", name="ens_category_show_format")
      * @Route("/{slug}/{page}", name="ens_category_show")
      * @Method("GET")
      * @Template()
@@ -44,8 +45,8 @@ class CategoryController extends Controller
             ->getActiveJobs($category->getId(),
                     $jobs_per_page,
                     $page));
-
-        return array(
+        
+        $context = array(
             'category' => $category,
             'last_page' => $last_page,
             'previous_page' => $previous_page,
@@ -53,5 +54,21 @@ class CategoryController extends Controller
             'next_page' => $next_page,
             'total_jobs' => $total_jobs,
         );
+    
+        $format = $this->getRequest()->getRequestFormat();
+
+        if('html' !== $format)
+        {
+            $feedId = sha1($this->get('router')->generate('ens_category_show_format', array('slug' => $category->getSlug(), '_format' => 'atom'), true));
+
+            $latest_job = $em->getRepository('EnsJobeetBundle:Job')->getLatestPost($category->getId());
+
+            $context['feedId'] = $feedId;            
+            $context['latest_job'] = $latest_job;
+
+            return $this->render('EnsJobeetBundle:Category:show.'.$format.'.twig', $context);
+        }
+        
+        return $context;
     }
 }

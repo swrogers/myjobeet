@@ -24,4 +24,5 @@ class CategoryRepository extends EntityRepository
 
         return $querybuilder->getQuery()->getResult();
     }
+
 }

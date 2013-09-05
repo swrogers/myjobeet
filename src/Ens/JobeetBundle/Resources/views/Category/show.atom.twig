@@ -2,9 +2,9 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Jobeet ({{ category.name }})</title>
   <subtitle>Latest Jobs</subtitle>
-  <link href="{{ url('ens_category_show', {'slug': category.slug, '_format': 'atom'}) }}" rel="self" />
+  <link href="{{ url('ens_category_show_format', {'slug': category.slug, '_format': 'atom'}) }}" rel="self" />
   <link href="{{ url('ens_category_show', {'slug': category.slug }) }}" />
-  <updated>{{ latest_job.created_at.format(constant('DATE_ATOM')) }}</updated>
+  <updated>{{ latest_job.createdAt.format(constant('DATE_ATOM')) }}</updated>
   <author><name>Jobeet</name></author>
   <id>{{ feedId }}</id>
 
